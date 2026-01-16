@@ -57,12 +57,11 @@ namespace azh::sdk::type
         inline bool empty() const { return !m_head_node_private->has_next(); }
         inline size_t size() const { return m_data_size_private; }
 
-        inline _base_type *front() const
+        inline _base_type front() const
         {
-            if (!m_head_node_private->has_next())
-                return nullptr;
+            assert(!empty());
 
-            return m_head_node_private->next->data_ptr;
+            return *(m_head_node_private->next->data_ptr);
         };
 
         void enqueue(const _base_type &data)

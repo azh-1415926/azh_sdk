@@ -177,15 +177,16 @@ namespace azh::sdk::type
 
         /* m_root_private 为该 B 树的根节点 */
         node *m_root_private;
+        size_t m_data_size_private;
         static const size_t m_s_max_key_private = _degree - 1;
         static const size_t m_s_min_key_private = (_degree - 1) / 2;
         static const size_t m_s_mid_key_private = (_degree + 1) / 2;
 
     public:
         /* 构造 B 树，即创建根节点 */
-        btree() : m_root_private(new node) {}
+        btree() : m_root_private(new node), m_data_size_private(0) {}
 
-        btree(const btree &t)
+        btree(const btree &t): m_data_size_private(t.m_data_size_private)
         {
             /* copy root */
             m_root_private = new node;
@@ -201,8 +202,8 @@ namespace azh::sdk::type
             size_t i = 1;
             while (!src_q.empty())
             {
-                curr_dest_node_ptr = *dest_q.front();
-                curr_src_node_ptr = *src_q.front();
+                curr_dest_node_ptr = dest_q.front();
+                curr_src_node_ptr = src_q.front();
 
                 dest_q.dequeue();
                 src_q.dequeue();
@@ -248,7 +249,7 @@ namespace azh::sdk::type
             size_t i = 1;
             while (!q.empty())
             {
-                curr_node_ptr = *q.front();
+                curr_node_ptr = q.front();
                 q.dequeue();
                 if (curr_node_ptr->m_children_private[0] != nullptr)
                 {
@@ -275,7 +276,7 @@ namespace azh::sdk::type
             size_t i = 1;
             while (!q.empty())
             {
-                curr_node_ptr = *q.front();
+                curr_node_ptr = q.front();
                 q.dequeue();
                 if (curr_node_ptr->m_children_private[0] != nullptr)
                 {
@@ -302,6 +303,7 @@ namespace azh::sdk::type
 
         /* 返回当前 B 树的阶数 */
         inline size_t order() const { return _degree; }
+        inline size_t size() const { return m_data_size_private; }
 
         /* 查找 key 对应的数据 */
         const _base_type &search(const _key_type &key) const
@@ -310,7 +312,7 @@ namespace azh::sdk::type
             node *n = searchBTNode(key);
             assert(n != nullptr);
             i = n->searchIndex(key);
-            return *n->data[i];
+            return n->m_data_private[i];
         }
 
         /* 创建关键字为 key、数据为 data 的节点，并插入到 B 树中 */
@@ -347,6 +349,8 @@ namespace azh::sdk::type
             {
                 splitBTNode(curr_node_ptr);
             }
+
+            m_data_size_private++;
             return true;
         }
 
@@ -403,6 +407,8 @@ namespace azh::sdk::type
                     if (parent == nullptr)
                     {
                         curr_node_ptr->deleteData(1);
+
+                        m_data_size_private--;
                         return true;
                     }
                     // normal node
@@ -431,6 +437,8 @@ namespace azh::sdk::type
                     balanceBTNode(target->m_parent_private, j);
                 }
             }
+
+            m_data_size_private--;
             return true;
         }
 

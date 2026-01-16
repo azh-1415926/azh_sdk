@@ -29,7 +29,7 @@ namespace azh::sdk::type
 
 		node *m_head_node_private;
 		size_t m_data_size_private;
-		
+
 	public:
 		using value_type = _base_type;
 
@@ -42,16 +42,27 @@ namespace azh::sdk::type
 			append(std::forward<list>(l));
 		}
 
-		list(_base_type *pArray, size_t size)
+		list(_base_type *array, size_t size)
 			: m_head_node_private(new node)
 		{
 			node *node_ptr = m_head_node_private;
 			for (size_t i = 0; i < size; ++i)
 			{
-				node_ptr->next = new node(pArray[i]);
+				node_ptr->next = new node(array[i]);
 				node_ptr = node_ptr->next;
 			}
 			m_data_size_private = size;
+		}
+
+		template <class _type>
+		list(const std::initializer_list<_type> &list) : m_head_node_private(new node), m_data_size_private(0)
+		{
+			size_t i = 0;
+            for (auto it = list.begin(); it != list.end(); it++)
+            {
+                push_back(*it);
+                i++;
+            }
 		}
 
 		~list()
@@ -69,7 +80,7 @@ namespace azh::sdk::type
 		inline bool empty() const { return !m_head_node_private->has_next(); }
 		inline size_t size() const { return m_data_size_private; }
 
-		inline void push_back(const _base_type &data) { insert(std::forward<_base_type>(data), m_data_size_private); }
+		inline void push_back(const _base_type &data) { insert(data, m_data_size_private); }
 
 		inline void pop_back() { erase(m_data_size_private - 1); }
 

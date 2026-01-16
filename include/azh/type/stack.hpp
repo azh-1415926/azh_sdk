@@ -63,6 +63,7 @@ namespace azh::sdk::type
         }
 
         inline bool empty() const { return !m_root_private->has_next(); }
+        inline size_t size() const { return m_data_size_private; }
 
         inline _base_type &top() const
         {
