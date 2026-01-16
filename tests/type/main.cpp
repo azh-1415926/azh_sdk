@@ -5,8 +5,6 @@
 #include "azh/utils/exception.hpp"
 #include "azh/utils/sort.hpp"
 
-using aDebug = azh::sdk::utils::aDebug;
-
 void test_sort_vector()
 {
     azh::sdk::type::vector<int> array = {1, 5, 7, 6, 3, 2, 10, 34, 12, 22, 11, 33};

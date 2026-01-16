@@ -279,6 +279,6 @@ namespace azh::sdk::utils
             return *this;
         }
     };
-
-    using aDebug = logger_wrapper;
 }
+
+using aDebug = azh::sdk::utils::logger_wrapper;
