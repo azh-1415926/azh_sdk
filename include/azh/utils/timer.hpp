@@ -14,10 +14,11 @@ namespace azh::sdk::utils
         // std::chrono::_V2::system_clock::time_point m_start_timepoint_private;
 
     public:
-        timer()
-        {
-            m_start_timepoint_private = std::chrono::system_clock::now();
-        }
+        timer() { m_start_timepoint_private = std::chrono::system_clock::now(); }
+        timer(const timer &t) : m_start_timepoint_private(t.m_start_timepoint_private) {}
+        ~timer() = default;
+
+        static long long sinceEpoch() { return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count(); }
 
         void refresh()
         {
@@ -37,7 +38,6 @@ namespace azh::sdk::utils
             return duration.count();
         }
 
-        timer(const timer &t) : m_start_timepoint_private(t.m_start_timepoint_private) {}
         timer operator=(const timer &t)
         {
             timer timer;
