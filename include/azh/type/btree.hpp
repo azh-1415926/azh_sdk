@@ -121,6 +121,76 @@ namespace azh::sdk::type
             return dest;
         }
 
+        static void moveNode(btnode *dest, btnode *src)
+        {
+            dest->m_key_size_private = src->m_key_size_private;
+            dest->m_children_private[0] = src->m_children_private[0];
+            if (src->m_children_private[0] != nullptr)
+                src->m_children_private[0]->m_parent_private = dest;
+            for (size_t i = 1; i <= dest->m_key_size_private; i++)
+            {
+                dest->m_keys_ptr_private[i] = src->m_keys_ptr_private[i];
+                dest->m_data_ptr_private[i] = src->m_data_ptr_private[i];
+                dest->m_children_private[i] = src->m_children_private[i];
+                if (src->m_children_private[i] != nullptr)
+                    src->m_children_private[i]->m_parent_private = dest;
+            }
+
+            /* clear node src */
+            src->m_children_private[0] = nullptr;
+            for (size_t i = 1; i < src->m_key_size_private; i++)
+            {
+                src->m_keys_ptr_private[i] = nullptr;
+                src->m_data_ptr_private[i] = nullptr;
+                src->m_children_private[i] = nullptr;
+            }
+            src->m_key_size_private = 0;
+        }
+
+        _key_type *moveKey(size_t i)
+        {
+            _key_type *key = m_keys_ptr_private[i];
+            m_keys_ptr_private[i] = nullptr;
+            return key;
+        }
+
+        _base_type *moveData(size_t i)
+        {
+            _base_type *data = m_data_ptr_private[i];
+            m_data_ptr_private[i] = nullptr;
+            return data;
+        }
+
+        void setKey(size_t i, _key_type *key)
+        {
+            if (!m_keys_ptr_private[i])
+                m_keys_ptr_private[i] = key;
+        }
+
+        void setData(size_t i, _base_type *data)
+        {
+            if (!m_data_ptr_private[i])
+                m_data_ptr_private[i] = data;
+        }
+
+        void insertData(size_t index, _key_type* k, _base_type* data)
+        {
+            /* 往 index 下标插入 key、value，将 index 后的数据往后挪一位，使得 index 位置空闲 */
+            size_t end_pos = m_key_size_private + 1;
+
+            removeKey(end_pos);
+            removeValue(end_pos);
+            for (size_t i = 0; i < end_pos - index; i++)
+            {
+                m_keys_ptr_private[end_pos - i] = m_keys_ptr_private[end_pos - i - 1];
+                m_data_ptr_private[end_pos - i] = m_data_ptr_private[end_pos - i - 1];
+            }
+            /* 将新关键字、数据插入 index 位置，关键字数量++ */
+            m_keys_ptr_private[index] = k;
+            m_data_ptr_private[index] = data;
+            m_key_size_private++;
+        }
+
         /* 查找当前节点中大于等于指定关键字 k 的最大下标 */
         size_t searchIndex(const _key_type &k) const
         {
@@ -184,6 +254,8 @@ namespace azh::sdk::type
                 m_keys_ptr_private[i] = m_keys_ptr_private[i + 1];
                 m_data_ptr_private[i] = m_data_ptr_private[i + 1];
             }
+            m_keys_ptr_private[end_pos] = nullptr;
+            m_data_ptr_private[end_pos] = nullptr;
             /* 成功覆盖后，将关键字总数-- */
             m_key_size_private--;
         }
@@ -423,10 +495,13 @@ namespace azh::sdk::type
         /* 在 B 树中删除关键字为 key 的节点 */
         bool erase(const _key_type &key)
         {
-            assert(m_root_private != nullptr)
+            assert(m_root_private != nullptr);
 
-                // need to alter
-                size_t i = 1;
+            if(m_data_size_private<1)
+                return false;
+
+            // need to alter
+            size_t i = 1;
             node *parent = nullptr;
             node *curr_node_ptr = m_root_private;
             //_base_type data;
@@ -481,6 +556,8 @@ namespace azh::sdk::type
                 target->deleteData(target->m_key_size_private);
                 if (target->m_key_size_private < m_s_min_key_private)
                 {
+                    if(j<1)
+                        j++;
                     balanceBTNode(target->m_parent_private, j);
                 }
             }
@@ -578,34 +655,21 @@ namespace azh::sdk::type
             node *r_child = parent->m_children_private[index];
             if (!(parent && r_child))
                 return;
+
             if (l_child != nullptr)
             {
                 // left child move to left
-                for (size_t i = rm_pos; i < l_child->m_key_size_private; i++)
-                {
-                    l_child->key(i) = l_child->key(i + 1);
-                    l_child->value(i) = l_child->value(i + 1);
-                }
-                if (rm_pos > l_child->m_key_size_private)
-                {
-                    l_child->m_key_size_private++;
-                }
-                l_child->key(l_child->m_key_size_private) = parent->key(index);
-                l_child->value(l_child->m_key_size_private) = parent->value(index);
+                l_child->m_key_size_private++;
+                l_child->setKey(l_child->m_key_size_private, parent->moveKey(index));
+                l_child->setData(l_child->m_key_size_private, parent->moveData(index));
             }
             l_child->insertChild(l_child->m_key_size_private, r_child->deleteBTNode(0));
+            // l_child->m_key_size_private++;
             // parent move to left
-            parent->key(index) = r_child->key(1);
-            parent->value(index) = r_child->value(1);
+            parent->setKey(index, r_child->moveKey(1));
+            parent->setData(index, r_child->moveData(1));
             // right child move to left
-            for (size_t i = 1; i < r_child->m_key_size_private; i++)
-            {
-                r_child->key(i) = r_child->key(i + 1);
-                r_child->value(i) = r_child->value(i + 1);
-            }
-            // r_child->key(r_child->m_key_size_private)=0;
-            // r_child->value(r_child->m_key_size_private)=nullptr;
-            r_child->m_key_size_private--;
+            r_child->deleteData(1);
         }
 
         /* 同理，将父节点中下标位置为 index 的关键字右移到 index 关键字对应的右子节点，到其 rm_pos 位置停下，若右子节点为空，则将父节点的最后一个关键字覆盖，不处理右子节点 */
@@ -614,30 +678,16 @@ namespace azh::sdk::type
             node *l_child = parent->m_children_private[index - 1];
             if (!(parent && l_child))
                 return;
+
             if (r_child != nullptr)
             {
-                // right child move to left
-                if (rm_pos > r_child->m_key_size_private)
-                {
-                    r_child->m_key_size_private++;
-                    rm_pos = r_child->m_key_size_private;
-                }
-                for (size_t i = rm_pos; i > 1; i--)
-                {
-                    r_child->key(i) = r_child->key(i - 1);
-                    r_child->value(i) = r_child->value(i - 1);
-                }
-                r_child->key(1) = parent->key(index);
-                r_child->value(1) = parent->value(index);
+                r_child->insertData(1,parent->moveKey(index),parent->moveData(index));
             }
             r_child->insertChild(0, l_child->deleteBTNode(l_child->m_key_size_private));
             // parent move to left
-            parent->key(index) = l_child->key(l_child->m_key_size_private);
-            parent->value(index) = l_child->value(l_child->m_key_size_private);
-            // left child move to left
-            //  l_child->key(l_child->m_key_size_private)=0;
-            //  l_child->value(l_child->m_key_size_private)=nullptr;
-            l_child->m_key_size_private--;
+            parent->setKey(index,l_child->moveKey(l_child->m_key_size_private));
+            parent->setData(index,l_child->moveData(l_child->m_key_size_private));
+            l_child->deleteData(l_child->m_key_size_private);
         }
 
         /* 合并父节点中指定下标位置的左右子节点 */
@@ -676,6 +726,7 @@ namespace azh::sdk::type
                 }
                 delete parent->deleteBTNode(index - 1);
             }
+            /* root node */
             if (parent->m_parent_private == nullptr)
             {
                 parent->deleteData(index);
@@ -683,18 +734,7 @@ namespace azh::sdk::type
                 {
                     node *n = parent->m_children_private[0];
                     // copy l_child to parent
-                    parent->m_key_size_private = n->m_key_size_private;
-                    parent->m_children_private[0] = n->m_children_private[0];
-                    if (n->m_children_private[0] != nullptr)
-                        n->m_children_private[0]->m_parent_private = parent;
-                    for (size_t i = 1; i <= parent->m_key_size_private; i++)
-                    {
-                        parent->key(i) = n->key(i);
-                        parent->value(i) = n->value(i);
-                        parent->m_children_private[i] = n->m_children_private[i];
-                        if (n->m_children_private[i] != nullptr)
-                            n->m_children_private[i]->m_parent_private = parent;
-                    }
+                    node::moveNode(parent, n);
                     delete n;
                 }
             }
