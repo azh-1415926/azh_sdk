@@ -9,7 +9,7 @@ namespace azh::sdk::type
     {
         typedef T _base_type;
 
-        _base_type *m_data_private;
+        _base_type **m_data_ptr_private;
         size_t m_data_size_private;
         size_t m_vec_size_private;
         size_t m_vec_increment_size_private;
@@ -18,48 +18,86 @@ namespace azh::sdk::type
         using value_type = _base_type;
 
         explicit vector(size_t capacity = 10)
-            : m_data_size_private(0), m_vec_size_private(10), m_vec_increment_size_private(20) { m_data_private = new _base_type[m_vec_size_private]; }
+            : m_data_size_private(0), m_vec_size_private(10), m_vec_increment_size_private(20)
+        {
+            m_data_ptr_private = new _base_type *[m_vec_size_private];
+
+            for (size_t i = m_data_size_private; i < m_vec_size_private; i++)
+            {
+                m_data_ptr_private[i] = nullptr;
+            }
+        }
 
         template <class _type>
         vector(const std::initializer_list<_type> &list)
             : m_data_size_private(0), m_vec_size_private(list.size()), m_vec_increment_size_private(20)
         {
-            m_data_private = new _base_type[m_vec_size_private];
+            m_data_ptr_private = new _base_type *[m_vec_size_private];
             size_t i = 0;
             for (auto it = list.begin(); it != list.end(); it++)
             {
-                m_data_private[i] = *it;
+                m_data_ptr_private[i] = new _base_type(*it);
                 i++;
             }
+            for (; i < m_vec_size_private; i++)
+            {
+                m_data_ptr_private[i] = nullptr;
+            }
+
             m_data_size_private = m_vec_size_private;
         }
 
         vector(const vector &vec)
             : m_data_size_private(vec.m_data_size_private), m_vec_size_private(vec.m_vec_size_private), m_vec_increment_size_private(vec.m_vec_increment_size_private)
         {
-            m_data_private = new _base_type[m_data_size_private];
+            m_data_ptr_private = new _base_type *[m_vec_size_private];
             for (size_t i = 0; i < m_data_size_private; i++)
-                m_data_private[i] = vec.m_data_private[i];
+            {
+                m_data_ptr_private[i] = new _base_type(*(vec.m_data_ptr_private[i]));
+            }
+
+            for (size_t i = m_data_size_private; i < m_vec_size_private; i++)
+            {
+                m_data_ptr_private[i] = nullptr;
+            }
         }
 
-        ~vector() { delete[] m_data_private; }
+        ~vector()
+        {
+            for (size_t i = 0; i < m_data_size_private; i++)
+            {
+                delete m_data_ptr_private[i];
+            }
+
+            delete[] m_data_ptr_private;
+        }
 
         inline bool empty() const { return m_data_size_private == 0; }
         inline size_t size() const { return m_data_size_private; }
         inline size_t capacity() const { return m_vec_size_private; }
         inline size_t increments() const { return m_vec_increment_size_private; }
-
         inline void setIncrements(size_t increments) { m_vec_increment_size_private = increments; }
+
+        _base_type &at(size_t i) { return *(m_data_ptr_private[i]); }
+        const _base_type &at(size_t i) const { return *(m_data_ptr_private[i]); }
 
         void reserve(size_t n)
         {
             if (n < m_data_size_private)
                 return;
-            _base_type *tmp = new _base_type[n];
+            _base_type **tmp = new _base_type *[n];
             for (size_t i = 0; i < m_data_size_private; i++)
-                tmp[i] = m_data_private[i];
-            delete[] m_data_private;
-            m_data_private = tmp;
+            {
+                tmp[i] = m_data_ptr_private[i];
+            }
+
+            for (size_t i = m_data_size_private; i < n; i++)
+            {
+                tmp[i] = nullptr;
+            }
+
+            delete[] m_data_ptr_private;
+            m_data_ptr_private = tmp;
             m_vec_size_private = n;
         }
 
@@ -67,32 +105,54 @@ namespace azh::sdk::type
         {
             if (m_data_size_private == m_vec_size_private)
                 reserve(m_vec_size_private + m_vec_increment_size_private);
-            m_data_private[m_data_size_private++] = data;
+
+            if (m_data_ptr_private[m_data_size_private])
+            {
+                *(m_data_ptr_private[m_data_size_private]) = data;
+            }
+            else
+            {
+                m_data_ptr_private[m_data_size_private] = new _base_type(data);
+            }
+
+            m_data_size_private++;
         }
 
         inline void pop_back() { m_data_size_private--; }
 
-        _base_type &operator[](size_t i) { return m_data_private[i]; }
-        const _base_type &operator[](size_t i) const { return m_data_private[i]; }
+        _base_type &operator[](size_t i) { return *(m_data_ptr_private[i]); }
+        const _base_type &operator[](size_t i) const { return *(m_data_ptr_private[i]); }
 
         vector &operator=(const vector &vec)
         {
             m_data_size_private = vec.m_data_size_private;
             m_vec_size_private = vec.m_vec_size_private;
             m_vec_increment_size_private = vec.m_vec_increment_size_private;
-            delete[] m_data_private;
-            m_data_private = new _base_type[m_data_size_private];
+
             for (size_t i = 0; i < m_data_size_private; i++)
-                m_data_private[i] = vec.m_data_private[i];
+                delete m_data_ptr_private[i];
+            delete[] m_data_ptr_private;
+            m_data_ptr_private = new _base_type *[m_vec_size_private];
+
+            for (size_t i = 0; i < m_data_size_private; i++)
+            {
+                m_data_ptr_private[i] = new _base_type(*(vec.m_data_ptr_private[i]));
+            }
+
+            for (size_t i = m_data_size_private; i < m_vec_size_private; i++)
+            {
+                m_data_ptr_private[i] = nullptr;
+            }
+
             return *this;
         }
 
         vector &operator<<(const _base_type &t)
-		{
-			push_back(t);
+        {
+            push_back(t);
 
-			return *this;
-		}
+            return *this;
+        }
 
         std::string toString() const
         {

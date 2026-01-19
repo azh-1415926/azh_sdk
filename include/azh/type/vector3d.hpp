@@ -23,7 +23,16 @@ namespace azh::sdk::type
                 return "vector3d()";
             }
 
-            std::string="vector3d()";
+            std::string str = "vector3d(";
+
+            for (size_t i = 0; i < m_data_size_private; i++)
+            {
+                str += to_string((*this)[i]);
+                if (i != m_data_size_private - 1)
+                    str += ",";
+            }
+
+            str += ")";
 
             return str;
         }
