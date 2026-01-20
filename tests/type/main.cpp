@@ -10,7 +10,7 @@ void test_sort_vector()
     azh::sdk::type::vector<int> array = {1, 5, 7, 6, 3, 2, 10, 34, 12, 22, 11, 33};
     aDebug()<<"orignal array : "<<array;
 
-    azh::sdk::utils::merge_sort_r<azh::sdk::type::vector<int>>::sort(array.begin(), array.end());
+    azh::sdk::utils::insertion_sort<azh::sdk::type::vector<int>>::sort(array.begin(), array.end());
     aDebug()<<"sorted array : "<<array;
 }
 
@@ -27,7 +27,7 @@ void test_list()
     aDebug()<<l;
     aDebug()<<"orignal list : "<<l;
 
-    azh::sdk::utils::merge_sort_r<azh::sdk::type::list<int>>::sort(l.begin(), l.end());
+    azh::sdk::utils::insertion_sort<azh::sdk::type::list<int>>::sort(l.begin(), l.end());
     aDebug()<<"sorted list : "<<l;
 }
 

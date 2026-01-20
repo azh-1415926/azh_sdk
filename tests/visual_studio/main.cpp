@@ -8,6 +8,7 @@ using astring=azh::sdk::utils::string;
 
 int main()
 {
+    #ifdef _WIN32
     std::string vs_registry_path="SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\devenv.exe";
     std::string value=azh::sdk::platform::win32::registry::valueOfHKLM(vs_registry_path,"");
     azh::sdk::utils::logger::getInstance()->debug("devenv.exe : ",value);
@@ -21,6 +22,7 @@ int main()
     azh::sdk::utils::command vs_env(vcvarsall_bat_path,true);
     vs_env<<"x64";
     vs_env.run();
+    #endif
 
     return 0;
 }

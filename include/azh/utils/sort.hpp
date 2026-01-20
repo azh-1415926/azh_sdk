@@ -13,20 +13,20 @@ namespace azh::sdk::utils
         /* container or base_type */
         typedef T _base_type;
         /* container* or base_type*, is the default iter */
-        typedef typename _base_type *_base_type_iterator;
+        typedef _base_type *_base_type_iterator;
 
     protected:
-        /* _type_iter is _base_type::iterator or _base_type*, default is _base_type::iterator */
-        template <class _type_iter = _base_type::iterator>
-        static void swap(_type_iter t1, _type_iter t2)
-        {
-            /* use _get_compare_type_by_iter get real type by iter type */
-            using _type = typename _get_compare_type_by_iter<_type_iter>::type;
+        // /* _type_iter is _base_type::iterator or _base_type*, default is _base_type::iterator */
+        // template <class _type_iter = typename _base_type::iterator>
+        // static void swap(_type_iter t1, _type_iter t2)
+        // {
+        //     /* use _get_compare_type_by_iter get real type by iter type */
+        //     using _type = typename _get_compare_type_by_iter<_type_iter>::type;
 
-            _type *tmp = new _type(*t1);
-            *t1 = *t2;
-            *t2 = *tmp;
-        }
+        //     _type *tmp = new _type(*t1);
+        //     *t1 = *t2;
+        //     *t2 = *tmp;
+        // }
 
         /* _type_iter is _base_type::iterator or _base_type*, default is _base_type::iterator */
         template <class _type_iter = _base_type_iterator>
@@ -44,20 +44,20 @@ namespace azh::sdk::utils
             return -1;
         }
 
-        /* get real type from container */
-        template <typename _type_iter, typename = void>
-        struct _get_compare_type_by_iter
-        {
-            using type = typename _base_type::value_type;
-        };
+        // /* get real type from container */
+        // template <typename _type_iter, typename = void>
+        // struct _get_compare_type_by_iter
+        // {
+        //     using type = typename _base_type::value_type;
+        // };
 
-        /* get real type from base_type* */
-        template <typename _type_iter>
-        struct _get_compare_type_by_iter<_type_iter,
-                                         std::enable_if_t<std::is_same<_type_iter, _base_type *>::value>>
-        {
-            using type = _base_type;
-        };
+        // /* get real type from base_type* */
+        // template <typename _type_iter>
+        // struct _get_compare_type_by_iter<_type_iter,
+        //                                  std::enable_if_t<std::is_same<_type_iter, _base_type *>::value>>
+        // {
+        //     using type = _base_type;
+        // };
 
         /* use real type to compare */
         template <typename _type>
@@ -75,13 +75,13 @@ namespace azh::sdk::utils
             return -1;
         }
 
-        /* get real type, call func _compare<real_type>(t1,t2) */
-        template <typename _type = _base_type>
-        static int compare(void *t1, void *t2)
-        {
-            using compare_type = typename _get_compare_type_by_iter<_type>::type;
-            return _compare<compare_type>(t1, t2);
-        }
+        // /* get real type, call func _compare<real_type>(t1,t2) */
+        // template <typename _type = _base_type>
+        // static int compare(void *t1, void *t2)
+        // {
+        //     using compare_type = typename _get_compare_type_by_iter<_type>::type;
+        //     return _compare<compare_type>(t1, t2);
+        // }
 
     private:
     };
@@ -91,7 +91,7 @@ namespace azh::sdk::utils
     class bubble_sort : public _sort_base<T>
     {
     public:
-        template <class _type_iter = T::iterator>
+        template <class _type_iter = typename T::iterator>
         static void sort(_type_iter begin, _type_iter end)
         {
             int len = end - begin;
@@ -115,7 +115,7 @@ namespace azh::sdk::utils
     class selection_sort : public _sort_base<T>
     {
     public:
-        template <class _type_iter = T::iterator>
+        template <class _type_iter = typename T::iterator>
         static void sort(_type_iter begin, _type_iter end)
         {
             int len = end - begin;
@@ -142,40 +142,40 @@ namespace azh::sdk::utils
     class insertion_sort : public _sort_base<T>
     {
     public:
-        template <class _type_iter = T::iterator>
+        template <class _type_iter = typename T::iterator>
         static void sort(_type_iter begin, _type_iter end)
         {
-            using _type = typename _get_compare_type_by_iter<_type_iter>::type;
-            size_t byte_sizes = sizeof(char) * (sizeof(*begin));
+            // using _type =  _get_compare_type_by_iter<_type_iter>::type;
+            // size_t byte_sizes = sizeof(char) * (sizeof(*begin));
 
-            int len = end - begin;
-            assert(len > 0);
+            // int len = end - begin;
+            // assert(len > 0);
 
-            // void *tmp = new char[byte_sizes];
-            _type *tmp = new _type;
-            for (int i = 1; i < len; i++)
-            {
-                int j;
-                // memcpy(tmp, &(*(begin + i)), byte_sizes);
-                *tmp = *(begin + i);
-                for (j = i; j > 0 && compare(&*(begin + j - 1), tmp) > 0; j--)
-                {
-                    // swap(begin + j, begin + j - 1);
-                    _type *__tmp = new _type(*(begin + j));
-                    *(begin + j) = *(begin + j - 1);
-                    *(begin + j - 1) = *__tmp;
-                    delete __tmp;
-                }
+            // // void *tmp = new char[byte_sizes];
+            // _type *tmp = new _type;
+            // for (int i = 1; i < len; i++)
+            // {
+            //     int j;
+            //     // memcpy(tmp, &(*(begin + i)), byte_sizes);
+            //     *tmp = *(begin + i);
+            //     for (j = i; j > 0 && compare(&*(begin + j - 1), tmp) > 0; j--)
+            //     {
+            //         // swap(begin + j, begin + j - 1);
+            //         _type *__tmp = new _type(*(begin + j));
+            //         *(begin + j) = *(begin + j - 1);
+            //         *(begin + j - 1) = *__tmp;
+            //         delete __tmp;
+            //     }
 
-                // swap(&*(begin + j), tmp,byte_sizes);
+            //     // swap(&*(begin + j), tmp,byte_sizes);
 
-                /* swap */
-                _type *_tmp = new _type(*(begin + j));
-                *(begin + j) = (_type)(*tmp);
-                *tmp = *_tmp;
-                delete _tmp;
-            }
-            delete tmp;
+            //     /* swap */
+            //     _type *_tmp = new _type(*(begin + j));
+            //     *(begin + j) = (_type)(*tmp);
+            //     *tmp = *_tmp;
+            //     delete _tmp;
+            // }
+            // delete tmp;
         }
 
     private:
@@ -187,37 +187,37 @@ namespace azh::sdk::utils
     class shell_sort : public _sort_base<T>
     {
     public:
-        template <class _type_iter = T::iterator>
+        template <class _type_iter = typename T::iterator>
         static void sort(_type_iter begin, _type_iter end)
         {
-            using _type = typename _get_compare_type_by_iter<_type_iter>::type;
+            // using _type = typename _get_compare_type_by_iter<_type_iter>::type;
 
-            int len = end - begin;
-            assert(len > 0);
+            // int len = end - begin;
+            // assert(len > 0);
 
-            _type *tmp = new _type;
-            for (int gap = len >> 1; gap > 0; gap >>= 1)
-            {
-                for (int i = gap; i < len; i++)
-                {
-                    int j;
-                    *tmp = *(begin + i);
-                    for (j = i - gap; j >= 0 && (compare(&*(begin + j), tmp) > 0); j -= gap)
-                    {
-                        swap(begin + j + gap, begin + j);
-                        _type *_tmp = new _type(*(begin + j + gap));
-                        *(begin + j + gap) = *(begin + j);
-                        *(begin + j) = *_tmp;
-                        delete _tmp;
-                    }
+            // _type *tmp = new _type;
+            // for (int gap = len >> 1; gap > 0; gap >>= 1)
+            // {
+            //     for (int i = gap; i < len; i++)
+            //     {
+            //         int j;
+            //         *tmp = *(begin + i);
+            //         for (j = i - gap; j >= 0 && (compare(&*(begin + j), tmp) > 0); j -= gap)
+            //         {
+            //             swap(begin + j + gap, begin + j);
+            //             _type *_tmp = new _type(*(begin + j + gap));
+            //             *(begin + j + gap) = *(begin + j);
+            //             *(begin + j) = *_tmp;
+            //             delete _tmp;
+            //         }
 
-                    _type *_tmp = new _type(*(begin + j + gap));
-                    *(begin + j + gap) = *tmp;
-                    *tmp = *(begin + j + gap);
-                    delete _tmp;
-                }
-            }
-            delete tmp;
+            //         _type *_tmp = new _type(*(begin + j + gap));
+            //         *(begin + j + gap) = *tmp;
+            //         *tmp = *(begin + j + gap);
+            //         delete _tmp;
+            //     }
+            // }
+            // delete tmp;
         }
 
     private:
@@ -229,64 +229,65 @@ namespace azh::sdk::utils
     class merge_sort : public _sort_base<T>
     {
     public:
-        template <class _type_iter = T::iterator>
+        template <class _type_iter = typename T::iterator>
         static void sort(_type_iter begin, _type_iter end)
         {
-            using _type = typename _get_compare_type_by_iter<_type_iter>::type;
-            int len = end - begin;
+            // using _type = typename _get_compare_type_by_iter<_type_iter>::type;
+            // int len = end - begin;
 
-            assert(len > 0);
+            // assert(len > 0);
 
-            _type *tmp = new _type[len];
-            for (int merge_size = 1; merge_size < len; merge_size <<= 1)
-            {
-                for (int left = 0; left < len;)
-                {
-                    int mid = left + merge_size - 1;
-                    int right = (mid + merge_size) < (len - 1) ? (mid + merge_size) : (len - 1);
-                    if (mid >= len)
-                        break;
-                    /* 归并开始 */
-                    int i = left;
-                    int p1 = left;
-                    int p2 = mid + 1;
-                    while (p1 <= mid && p2 <= right)
-                    {
-                        if (compare(begin + p1, begin + p2) <= 0)
-                        {
-                            *(tmp + i) = *(begin + p1);
-                            i++;
-                            p1++;
-                        }
-                        else
-                        {
-                            *(tmp + i) = *(begin + p2);
-                            i++;
-                            p2++;
-                        }
-                    }
-                    while (p1 <= mid)
-                    {
-                        *(tmp + i) = *(begin + p1);
-                        i++;
-                        p1++;
-                    }
-                    while (p2 <= right)
-                    {
-                        *(tmp + i) = *(begin + p2);
-                        i++;
-                        p2++;
-                    }
-                    for (int j = 0; j < right + 1 - left; j++)
-                        *(begin + left + j) = *(tmp + left + j);
-                    /* 归并结束 */
-                    left = right + 1;
-                }
-                if (merge_size > len / 2)
-                    break;
-            }
+            // _type *tmp = new _type[len];
+            // for (int merge_size = 1; merge_size < len; merge_size <<= 1)
+            // {
+                
+            //     for (int left = 0; left < len;)
+            //     {
+            //         int mid = left + merge_size - 1;
+            //         int right = (mid + merge_size) < (len - 1) ? (mid + merge_size) : (len - 1);
+            //         if (mid >= len)
+            //             break;
+            //         /* 归并开始 */
+            //         int i = left;
+            //         int p1 = left;
+            //         int p2 = mid + 1;
+            //         while (p1 <= mid && p2 <= right)
+            //         {
+            //             if (compare(begin + p1, begin + p2) <= 0)
+            //             {
+            //                 *(tmp + i) = *(begin + p1);
+            //                 i++;
+            //                 p1++;
+            //             }
+            //             else
+            //             {
+            //                 *(tmp + i) = *(begin + p2);
+            //                 i++;
+            //                 p2++;
+            //             }
+            //         }
+            //         while (p1 <= mid)
+            //         {
+            //             *(tmp + i) = *(begin + p1);
+            //             i++;
+            //             p1++;
+            //         }
+            //         while (p2 <= right)
+            //         {
+            //             *(tmp + i) = *(begin + p2);
+            //             i++;
+            //             p2++;
+            //         }
+            //         for (int j = 0; j < right + 1 - left; j++)
+            //             *(begin + left + j) = *(tmp + left + j);
+            //         /* 归并结束 */
+            //         left = right + 1;
+            //     }
+            //     if (merge_size > len / 2)
+            //         break;
+            // }
 
-            delete[] tmp;
+            // delete[] tmp;
         }
 
     private:
@@ -298,60 +299,60 @@ namespace azh::sdk::utils
     class merge_sort_r : public _sort_base<T>
     {
     public:
-        template <class _type_iter = T::iterator>
+        template <class _type_iter = typename T::iterator>
         static void sort(_type_iter begin, _type_iter end)
         {
-            using _type = typename _get_compare_type_by_iter<_type_iter>::type;
-            int len = end - begin;
+            // using _type = typename _get_compare_type_by_iter<_type_iter>::type;
+            // int len = end - begin;
 
-            assert(len > 0);
+            // assert(len > 0);
 
-            _type *tmp = new _type[len];
-            static std::function<void(int, int)> _mergeRecursive = [begin, tmp](int left, int right)
-            {
-                if (left == right)
-                    return;
-                int mid = left + ((right - left) >> 1);
-                _mergeRecursive(left, mid);
-                _mergeRecursive(mid + 1, right);
-                /* 归并开始 */
-                int i = left;
-                int p1 = left;
-                int p2 = mid + 1;
-                while (p1 <= mid && p2 <= right)
-                {
-                    if (compare(begin + p1, begin + p2) <= 0)
-                    {
-                        *(tmp + i) = *(begin + p1);
-                        i++;
-                        p1++;
-                    }
-                    else
-                    {
-                        *(tmp + i) = *(begin + p2);
-                        i++;
-                        p2++;
-                    }
-                }
-                while (p1 <= mid)
-                {
-                    *(tmp + i) = *(begin + p1);
-                    i++;
-                    p1++;
-                }
-                while (p2 <= right)
-                {
-                    *(tmp + i) = *(begin + p2);
-                    i++;
-                    p2++;
-                }
-                for (size_t i = 0; i < right + 1 - left; i++)
-                    *(begin + left + i) = *(tmp + left + i);
-                /* 归并结束 */
-            };
-            _mergeRecursive(0, len - 1);
+            // _type *tmp = new _type[len];
+            // static std::function<void(int, int)> _mergeRecursive = [begin, tmp](int left, int right)
+            // {
+            //     if (left == right)
+            //         return;
+            //     int mid = left + ((right - left) >> 1);
+            //     _mergeRecursive(left, mid);
+            //     _mergeRecursive(mid + 1, right);
+            //     /* 归并开始 */
+            //     int i = left;
+            //     int p1 = left;
+            //     int p2 = mid + 1;
+            //     while (p1 <= mid && p2 <= right)
+            //     {
+            //         if (compare(begin + p1, begin + p2) <= 0)
+            //         {
+            //             *(tmp + i) = *(begin + p1);
+            //             i++;
+            //             p1++;
+            //         }
+            //         else
+            //         {
+            //             *(tmp + i) = *(begin + p2);
+            //             i++;
+            //             p2++;
+            //         }
+            //     }
+            //     while (p1 <= mid)
+            //     {
+            //         *(tmp + i) = *(begin + p1);
+            //         i++;
+            //         p1++;
+            //     }
+            //     while (p2 <= right)
+            //     {
+            //         *(tmp + i) = *(begin + p2);
+            //         i++;
+            //         p2++;
+            //     }
+            //     for (size_t i = 0; i < right + 1 - left; i++)
+            //         *(begin + left + i) = *(tmp + left + i);
+            //     /* 归并结束 */
+            // };
+            // _mergeRecursive(0, len - 1);
 
-            delete[] tmp;
+            // delete[] tmp;
         }
 
     private:
@@ -363,7 +364,7 @@ namespace azh::sdk::utils
     class quick_sort : public _sort_base<T>
     {
     public:
-        template <class _type_iter = T::iterator>
+        template <class _type_iter = typename T::iterator>
         static void sort(_type_iter begin, _type_iter end)
         {
             int len = end - begin;
@@ -432,7 +433,7 @@ namespace azh::sdk::utils
     class quick_sort_r : public _sort_base<T>
     {
     public:
-        template <class _type_iter = T::iterator>
+        template <class _type_iter = typename T::iterator>
         static void sort(_type_iter begin, _type_iter end)
         {
             int len = end - begin;
@@ -486,7 +487,7 @@ namespace azh::sdk::utils
     class heap_sort : public _sort_base<T>
     {
     public:
-        template <class _type_iter = T::iterator>
+        template <class _type_iter = typename T::iterator>
         static void sort(_type_iter begin, _type_iter end)
         {
             int len = end - begin;

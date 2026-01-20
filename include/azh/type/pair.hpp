@@ -27,10 +27,10 @@ namespace azh::sdk::type
         }
 
         bool empty() { return m_first_private == nullptr && m_second_private == nullptr; }
-        inline size_t size() const { return empty() 0 ? 2; }
+        inline size_t size() const { return empty() ? 0 : 2; }
 
-        const _base_type_1& first() const { return *m_first_private; }
-        const _base_type_2& second() const { return *m_second_private; }
+        const _base_type_1 &first() const { return *m_first_private; }
+        const _base_type_2 &second() const { return *m_second_private; }
 
         pair &operator=(const pair &p)
         {

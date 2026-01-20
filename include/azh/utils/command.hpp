@@ -2,12 +2,17 @@
 
 #include <string>
 #include <vector>
-
+#include <memory>
 #include <iostream>
 #include <string>
 
 #ifdef _WIN32
 #include <windows.h>
+#else
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #endif
 namespace azh::sdk::utils
 {

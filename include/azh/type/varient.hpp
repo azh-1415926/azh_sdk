@@ -2,6 +2,7 @@
 
 #include <utility>
 #include <stdexcept>
+#include <memory>
 #include "string.hpp"
 
 namespace azh::sdk::type

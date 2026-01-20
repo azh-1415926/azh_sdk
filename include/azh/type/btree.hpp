@@ -173,7 +173,7 @@ namespace azh::sdk::type
                 m_data_ptr_private[i] = data;
         }
 
-        void insertData(size_t index, _key_type* k, _base_type* data)
+        void insertData(size_t index, _key_type *k, _base_type *data)
         {
             /* 往 index 下标插入 key、value，将 index 后的数据往后挪一位，使得 index 位置空闲 */
             size_t end_pos = m_key_size_private + 1;
@@ -497,7 +497,7 @@ namespace azh::sdk::type
         {
             assert(m_root_private != nullptr);
 
-            if(m_data_size_private<1)
+            if (m_data_size_private < 1)
                 return false;
 
             // need to alter
@@ -556,7 +556,7 @@ namespace azh::sdk::type
                 target->deleteData(target->m_key_size_private);
                 if (target->m_key_size_private < m_s_min_key_private)
                 {
-                    if(j<1)
+                    if (j < 1)
                         j++;
                     balanceBTNode(target->m_parent_private, j);
                 }
@@ -611,7 +611,7 @@ namespace azh::sdk::type
             {
                 // n->key(m_s_mid_key_private+i)=0;
                 // n->value(m_s_mid_key_private+i)=nullptr;
-                r_child->insertData(i, n->key(m_s_mid_key_private + i), n->value(m_s_mid_key_private + i));
+                r_child->insertData(i, n->moveKey(m_s_mid_key_private + i), n->moveData(m_s_mid_key_private + i));
                 r_child->insertChild(i, n->m_children_private[m_s_mid_key_private + i]);
                 n->m_children_private[m_s_mid_key_private + i] = nullptr;
             }
@@ -625,14 +625,17 @@ namespace azh::sdk::type
                 n->m_children_private[0] = nullptr;
                 for (size_t i = 1; i < m_s_mid_key_private; i++)
                 {
-                    l_child->insertData(i, n->key(i), n->value(i));
+                    l_child->insertData(i, n->moveKey(i), n->moveData(i));
                     l_child->insertChild(i, n->m_children_private[i]);
                     n->m_children_private[i] = nullptr;
                 }
+                
                 n->m_key_size_private = 0;
                 n->insertChild(0, l_child);
-                n->insertData(1, n->key(m_s_mid_key_private), n->value(m_s_mid_key_private));
+                n->insertData(1, n->moveKey(m_s_mid_key_private), n->moveData(m_s_mid_key_private));
                 n->insertChild(1, r_child);
+                r_child->m_parent_private=n;
+                n->m_key_size_private = 1;
             }
             else
             {
@@ -641,7 +644,7 @@ namespace azh::sdk::type
                 n->m_key_size_private = m_s_mid_key_private - 1;
                 if (n->key(m_s_mid_key_private) > parent->key(index))
                     index++;
-                parent->insertData(index, n->key(m_s_mid_key_private), n->value(m_s_mid_key_private));
+                parent->insertData(index, n->moveKey(m_s_mid_key_private), n->moveData(m_s_mid_key_private));
                 // l_child is n;
                 parent->insertChild(index, r_child);
                 if (parent->m_key_size_private > m_s_max_key_private)
@@ -681,12 +684,12 @@ namespace azh::sdk::type
 
             if (r_child != nullptr)
             {
-                r_child->insertData(1,parent->moveKey(index),parent->moveData(index));
+                r_child->insertData(1, parent->moveKey(index), parent->moveData(index));
             }
             r_child->insertChild(0, l_child->deleteBTNode(l_child->m_key_size_private));
             // parent move to left
-            parent->setKey(index,l_child->moveKey(l_child->m_key_size_private));
-            parent->setData(index,l_child->moveData(l_child->m_key_size_private));
+            parent->setKey(index, l_child->moveKey(l_child->m_key_size_private));
+            parent->setData(index, l_child->moveData(l_child->m_key_size_private));
             l_child->deleteData(l_child->m_key_size_private);
         }
 

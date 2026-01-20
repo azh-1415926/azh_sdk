@@ -7,6 +7,7 @@
 #include <chrono>
 #include <sstream>
 #include <exception>
+#include <memory>
 
 namespace azh::sdk::test
 {
@@ -173,11 +174,11 @@ namespace azh::sdk::test
     public:
         static test_runner &getInstance()
         {
-            static test_runner *instance = nullptr;
+            static std::unique_ptr<test_runner>instance = nullptr;
 
             if (!instance)
             {
-                instance = new test_runner();
+                instance.reset(new test_runner());
             }
             return *instance;
         }

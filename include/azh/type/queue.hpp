@@ -15,7 +15,6 @@ namespace azh::sdk::type
             node *next;
             explicit node(node *n = nullptr) : data_ptr(nullptr), next(n) {}
             explicit node(const _base_type &d, node *n = nullptr) : data_ptr(new _base_type(d)), next(n) {}
-            node(const node &d) : data_ptr(), next(n) {}
             ~node()
             {
                 if (data_ptr)
@@ -32,11 +31,7 @@ namespace azh::sdk::type
         size_t m_data_size_private;
 
     public:
-        queue() : m_head_node_private(new node), m_data_size_private(0)
-        {
-            m_head_node_private = new node;
-        }
-
+        queue() : m_head_node_private(new node), m_data_size_private(0) {}
         queue(const queue &q) : m_head_node_private(new node), m_data_size_private(0)
         {
             append(std::forward<queue>(q));
@@ -128,11 +123,11 @@ namespace azh::sdk::type
         }
 
         queue &operator<<(const _base_type &t)
-		{
-			enqueue(t);
+        {
+            enqueue(t);
 
-			return *this;
-		}
+            return *this;
+        }
 
         std::string toString() const
         {

@@ -15,7 +15,6 @@ namespace azh::sdk::type
             node *next;
             explicit node(node *n = nullptr) : data_ptr(nullptr), next(n) {}
             explicit node(const _base_type &d, node *n = nullptr) : data_ptr(new _base_type(d)), next(n) {}
-            node(const node &d) : data_ptr(), next(n) {}
             ~node()
             {
                 if (data_ptr)
@@ -60,6 +59,9 @@ namespace azh::sdk::type
                 m_root_private = m_root_private->next;
                 delete tmp_ptr;
             }
+
+            delete m_root_private;
+            m_root_private=nullptr;
         }
 
         inline bool empty() const { return !m_root_private->has_next(); }

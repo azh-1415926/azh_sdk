@@ -18,17 +18,17 @@ namespace azh::sdk::type
 
         std::string toString() const
         {
-            if (empty())
+            if (this->empty())
             {
                 return "vector3d()";
             }
 
             std::string str = "vector3d(";
 
-            for (size_t i = 0; i < m_data_size_private; i++)
+            for (size_t i = 0; i < this->m_data_size_private; i++)
             {
                 str += to_string((*this)[i]);
-                if (i != m_data_size_private - 1)
+                if (i != this->m_data_size_private - 1)
                     str += ",";
             }
 

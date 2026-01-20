@@ -20,6 +20,12 @@ TEST(azh_type, vec, "Test vector")
     ASSERT_EQUAL(9, array[5]);
     ASSERT_EQUAL(10, array[6]);
     ASSERT_EQUAL(0, array[7]);
+
+    array.pop_back();
+    array.pop_back();
+    array.pop_back();
+    array.pop_back();
+    array.pop_back();
 }
 
 TEST(azh_type, list, "Test list")
@@ -216,6 +222,11 @@ TEST(azh_type, stringlist, "Test stringlist")
     ASSERT_EQUAL("2.3", l[5]);
     ASSERT_EQUAL("4.5", l[6]);
     ASSERT_EQUAL("100", l[7]);
+    l.pop_back();
+    l.pop_back();
+    l.pop_back();
+    l.pop_back();
+    l.pop_back();
 }
 
 TEST(azh_type, varientlist, "Test varientlist")
@@ -232,4 +243,10 @@ TEST(azh_type, varientlist, "Test varientlist")
     ASSERT_EQUAL(2.3, l[5].getValue<double>());
     ASSERT_EQUAL(4.5, l[6].getValue<double>());
     ASSERT_EQUAL(100, l[7].getValue<int>());
+
+    l.pop_back();
+    l.pop_back();
+    l.pop_back();
+    l.pop_back();
+    l.pop_back();
 }

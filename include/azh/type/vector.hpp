@@ -9,6 +9,7 @@ namespace azh::sdk::type
     {
         typedef T _base_type;
 
+    protected:
         _base_type **m_data_ptr_private;
         size_t m_data_size_private;
         size_t m_vec_size_private;
@@ -118,7 +119,14 @@ namespace azh::sdk::type
             m_data_size_private++;
         }
 
-        inline void pop_back() { m_data_size_private--; }
+        inline void pop_back()
+        {
+            if(m_data_size_private>0&&m_data_ptr_private[m_data_size_private-1])
+            {
+                delete m_data_ptr_private[m_data_size_private-1];
+                m_data_size_private--;
+            }
+        }
 
         _base_type &operator[](size_t i) { return *(m_data_ptr_private[i]); }
         const _base_type &operator[](size_t i) const { return *(m_data_ptr_private[i]); }
