@@ -7,32 +7,32 @@
 
 namespace azh::sdk::type
 {
-    class varient;
+    class variant;
 
     namespace detail
     {
-        class varient_base
+        class variant_base
         {
         public:
-            virtual ~varient_base() = default;
-            virtual std::unique_ptr<varient_base> clone() const = 0;
+            virtual ~variant_base() = default;
+            virtual std::unique_ptr<variant_base> clone() const = 0;
             virtual const std::type_info& getType() const noexcept = 0;
             virtual std::string toString() const = 0;
         };
 
         template<typename T>
-        class varient_holder : public varient_base
+        class variant_holder : public variant_base
         {
             typedef T _base_type;
             _base_type m_value_private;
             
         public:
-            varient_holder(const T& value) : m_value_private(value) {}
-            varient_holder(T&& value) : m_value_private(std::move(value)) {}
+            variant_holder(const T& value) : m_value_private(value) {}
+            variant_holder(T&& value) : m_value_private(std::move(value)) {}
             
-            std::unique_ptr<varient_base> clone() const override
+            std::unique_ptr<variant_base> clone() const override
             {
-                return std::make_unique<varient_holder<T>>(m_value_private);
+                return std::make_unique<variant_holder<T>>(m_value_private);
             }
             
             const std::type_info& getType() const noexcept override
@@ -50,14 +50,14 @@ namespace azh::sdk::type
         };
     }
 
-    class varient
+    class variant
     {
-        std::unique_ptr<detail::varient_base> m_data_private;
+        std::unique_ptr<detail::variant_base> m_data_private;
         
     public:
-        varient() = default;
+        variant() = default;
         
-        varient(const varient& v)
+        variant(const variant& v)
         {
             if (v.m_data_private)
             {
@@ -65,21 +65,21 @@ namespace azh::sdk::type
             }
         }
         
-        varient(varient&& v) noexcept = default;
+        variant(variant&& v) noexcept = default;
         
         template<typename T>
-        varient(const T& value)
-            : m_data_private(std::make_unique<detail::varient_holder<std::decay_t<T>>>(value)) {}
+        variant(const T& value)
+            : m_data_private(std::make_unique<detail::variant_holder<std::decay_t<T>>>(value)) {}
         
-        varient(const char* str)
-            : m_data_private(std::make_unique<detail::varient_holder<std::string>>(std::string(str))) {}
+        variant(const char* str)
+            : m_data_private(std::make_unique<detail::variant_holder<std::string>>(std::string(str))) {}
         
-        varient(char* str)
-            : m_data_private(std::make_unique<detail::varient_holder<std::string>>(std::string(str))) {}
+        variant(char* str)
+            : m_data_private(std::make_unique<detail::variant_holder<std::string>>(std::string(str))) {}
         
-        ~varient() = default;
+        ~variant() = default;
         
-        varient& operator=(const varient& v)
+        variant& operator=(const variant& v)
         {
             if (this != &v)
             {
@@ -95,24 +95,24 @@ namespace azh::sdk::type
             return *this;
         }
         
-        varient& operator=(varient&& v) noexcept = default;
+        variant& operator=(variant&& v) noexcept = default;
         
         template<typename T>
-        varient& operator=(const T& value)
+        variant& operator=(const T& value)
         {
-            m_data_private = std::make_unique<detail::varient_holder<std::decay_t<T>>>(value);
+            m_data_private = std::make_unique<detail::variant_holder<std::decay_t<T>>>(value);
             return *this;
         }
         
-        varient& operator=(const char* str)
+        variant& operator=(const char* str)
         {
-            m_data_private = std::make_unique<detail::varient_holder<std::string>>(std::string(str));
+            m_data_private = std::make_unique<detail::variant_holder<std::string>>(std::string(str));
             return *this;
         }
         
-        varient& operator=(char* str)
+        variant& operator=(char* str)
         {
-            m_data_private = std::make_unique<detail::varient_holder<std::string>>(std::string(str));
+            m_data_private = std::make_unique<detail::variant_holder<std::string>>(std::string(str));
             return *this;
         }
         
@@ -130,7 +130,7 @@ namespace azh::sdk::type
         {
             if (empty())
             {
-                throw std::runtime_error("varient is empty");
+                throw std::runtime_error("variant is empty");
             }
             return m_data_private->getType();
         }
@@ -140,10 +140,10 @@ namespace azh::sdk::type
         {
             if (empty())
             {
-                m_data_private = std::make_unique<detail::varient_holder<T>>(T());
+                m_data_private = std::make_unique<detail::variant_holder<T>>(T());
             }
             
-            auto* holder = dynamic_cast<detail::varient_holder<T>*>(m_data_private.get());
+            auto* holder = dynamic_cast<detail::variant_holder<T>*>(m_data_private.get());
             if (!holder)
             {
                 throw std::bad_cast();
@@ -157,10 +157,10 @@ namespace azh::sdk::type
         {
             if (empty())
             {
-                throw std::runtime_error("varient is empty");
+                throw std::runtime_error("variant is empty");
             }
             
-            auto* holder = dynamic_cast<const detail::varient_holder<T>*>(m_data_private.get());
+            auto* holder = dynamic_cast<const detail::variant_holder<T>*>(m_data_private.get());
             if (!holder)
             {
                 throw std::bad_cast();
@@ -173,7 +173,7 @@ namespace azh::sdk::type
         T* getIf() noexcept
         {
             if (empty()) return nullptr;
-            auto* holder = dynamic_cast<detail::varient_holder<T>*>(m_data_private.get());
+            auto* holder = dynamic_cast<detail::variant_holder<T>*>(m_data_private.get());
             return holder ? &holder->getValue() : nullptr;
         }
         
@@ -181,7 +181,7 @@ namespace azh::sdk::type
         const T* getIf() const noexcept
         {
             if (empty()) return nullptr;
-            auto* holder = dynamic_cast<const detail::varient_holder<T>*>(m_data_private.get());
+            auto* holder = dynamic_cast<const detail::variant_holder<T>*>(m_data_private.get());
             return holder ? &holder->getValue() : nullptr;
         }
         
@@ -206,11 +206,11 @@ namespace azh::sdk::type
         {
             if (empty())
             {
-                return "varient(empty)";
+                return "variant(empty)";
             }
             
             std::ostringstream oss;
-            oss << "varient(" << m_data_private->toString() << ")";
+            oss << "variant(" << m_data_private->toString() << ")";
             return oss.str();
         }
         
@@ -219,13 +219,13 @@ namespace azh::sdk::type
             return toString();
         }
         
-        friend std::ostream& operator<<(std::ostream& os, const varient& v)
+        friend std::ostream& operator<<(std::ostream& os, const variant& v)
         {
             os << v.toString();
             return os;
         }
         
-        bool operator==(const varient& v) const
+        bool operator==(const variant& v) const
         {
             if (empty() && v.empty()) return true;
             if (empty() != v.empty()) return false;
@@ -234,7 +234,7 @@ namespace azh::sdk::type
             return m_data_private->toString() == v.m_data_private->toString();
         }
         
-        bool operator!=(const varient& v) const
+        bool operator!=(const variant& v) const
         {
             return !(*this == v);
         }

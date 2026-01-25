@@ -3,7 +3,7 @@
 #include "string.hpp"
 #include "point.hpp"
 #include "point3d.hpp"
-#include "varient.hpp"
+#include "variant.hpp"
 #include "pair.hpp"
 #include "vector.hpp"
 #include "vector2d.hpp"
@@ -16,5 +16,5 @@
 namespace azh::sdk::type
 {
     using stringlist = list<std::string>;
-    using varientlist = list<varient>;
+    using variantlist = list<variant>;
 }

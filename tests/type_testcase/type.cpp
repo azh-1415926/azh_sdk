@@ -197,11 +197,11 @@ TEST(azh_type, btree, "Test btree")
     ASSERT_EQUAL(0, b.size());
 }
 
-TEST(azh_type, varient, "Test varient")
+TEST(azh_type, variant, "Test variant")
 {
-    varient v1 = 3;
-    varient v2 = 3.1;
-    varient v3 = "hello";
+    variant v1 = 3;
+    variant v2 = 3.1;
+    variant v3 = "hello";
 
     ASSERT_EQUAL(3, v1.getValue<int>());
     ASSERT_EQUAL(3.1, v2.getValue<double>());
@@ -229,9 +229,9 @@ TEST(azh_type, stringlist, "Test stringlist")
     l.pop_back();
 }
 
-TEST(azh_type, varientlist, "Test varientlist")
+TEST(azh_type, variantlist, "Test variantlist")
 {
-    varientlist l;
+    variantlist l;
     l << 1 << "test" << "hello" << "world" << 2 << 2.3 << 4.5 << 100;
 
     ASSERT_EQUAL(8, l.size());

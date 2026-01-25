@@ -14,9 +14,9 @@ void test_sort_vector()
     aDebug()<<"sorted array : "<<array;
 }
 
-void test_varient_vector()
+void test_variant_vector()
 {
-    azh::sdk::type::vector<azh::sdk::type::varient> array_v = {1, 5, 7, 6, 3, 2, 10, 34, 12, 22, 11, 33};
+    azh::sdk::type::vector<azh::sdk::type::variant> array_v = {1, 5, 7, 6, 3, 2, 10, 34, 12, 22, 11, 33};
     aDebug()<<array_v;
 }
 
@@ -91,9 +91,9 @@ void test_pair()
     aDebug()<<pa;
 }
 
-void test_varientlist()
+void test_variantlist()
 {
-    azh::sdk::type::varientlist l;
+    azh::sdk::type::variantlist l;
     l<<"1"<<"test"<<1<<3414<<1.2<<'1';
     aDebug()<<l;
 }
@@ -101,14 +101,14 @@ void test_varientlist()
 int main()
 {
     test_sort_vector();
-    test_varient_vector();
+    test_variant_vector();
     test_list();
     test_queue();
     test_btree();
     test_stringlist();
     test_stack();
     test_pair();
-    test_varientlist();
+    test_variantlist();
 
     return 0;
 }
