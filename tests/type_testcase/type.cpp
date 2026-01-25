@@ -126,9 +126,9 @@ TEST(azh_type, stack, "Test stack")
     ASSERT_EQUAL(0, s.size());
 }
 
-TEST(azh_type, btree, "Test btree")
+TEST(azh_type, b_tree, "Test b_tree")
 {
-    btree<int, std::string> b;
+    b_tree<int, std::string> b;
     b.insert(45, "hello");
     b.insert(4, "world");
     b.insert(5, "nihao");

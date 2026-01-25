@@ -46,20 +46,49 @@ void test_queue()
 
 void test_btree()
 {
-    azh::sdk::type::btree<int, int> *b = new azh::sdk::type::btree<int, int>;
+    azh::sdk::type::b_tree<int, int> *b = new azh::sdk::type::b_tree<int, int>;
     b->insert(1, 1);
+    aDebug()<<*b;
     b->insert(3, 3);
+    aDebug()<<*b;
     b->insert(0, 0);
+    aDebug()<<*b;
     b->insert(7, 7);
+    aDebug()<<*b;
     b->insert(9, 9);
+    aDebug()<<*b;
     b->insert(6, 6);
+    aDebug()<<*b;
     b->insert(2, 2);
+    aDebug()<<*b;
     b->insert(21, 21);
+    aDebug()<<*b;
     b->insert(51, 51);
+    aDebug()<<*b;
     b->insert(4, 4);
-    // (*b)<<azh::sdk::type::pair<int,int>(4,4);
+    aDebug()<<*b;
+    b->erase(4);
+    aDebug()<<*b;
+    b->erase(1);
+    aDebug()<<*b;
+    b->erase(3);
+    aDebug()<<*b;
+    b->erase(0);
+    aDebug()<<*b;
+    b->erase(2);
+    aDebug()<<*b;
+    b->erase(7);
+    aDebug()<<*b;
+    b->erase(51);
+    aDebug()<<*b;
+    b->erase(6);
+    aDebug()<<*b;
+    b->erase(9);
+    aDebug()<<*b;
+    b->erase(21);
+    aDebug()<<*b;
 
-    azh::sdk::type::btree<int, int> b1(*b);
+    azh::sdk::type::b_tree<int, int> b1(*b);
     delete b;
     aDebug()<<b1;
 }
