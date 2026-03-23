@@ -292,13 +292,14 @@ namespace azh::sdk::type
         /* m_root_private is root node */
         node *m_root_private;
         size_t m_data_size_private;
+        size_t m_level_size_private;
         static const size_t m_s_max_key_private = _degree - 1;
         static const size_t m_s_min_key_private = (_degree - 1) / 2;
         static const size_t m_s_mid_key_private = (_degree + 1) / 2;
 
     public:
-        b_tree() : m_root_private(new node), m_data_size_private(0) {}
-        b_tree(const b_tree &t) : m_data_size_private(t.m_data_size_private)
+        b_tree() : m_root_private(new node), m_data_size_private(0), m_level_size_private(1) {}
+        b_tree(const b_tree &t) : m_data_size_private(t.m_data_size_private), m_level_size_private(t.m_level_size_private)
         {
             /* copy root */
             m_root_private = new node;
@@ -417,6 +418,8 @@ namespace azh::sdk::type
         inline size_t order() const { return _degree; }
         /* return data size */
         inline size_t size() const { return m_data_size_private; }
+        /* return level size */
+        inline size_t level() const { return m_level_size_private; }
 
         /* find k in b_tree, return data */
         const _base_type &search(const _key_type &k) const
@@ -427,6 +430,13 @@ namespace azh::sdk::type
                 throw std::out_of_range("b_tree : can not search k : " + to_string(k));
             i = n->searchIndex(k);
             return n->value(i);
+        }
+
+        bool contains(const _key_type &k) const
+        {
+            size_t i = 0;
+            node *n = searchBTNode(k);
+            return n;
         }
 
         /* insert key&data into b_tree */
@@ -487,6 +497,8 @@ namespace azh::sdk::type
             size_t i = 0;
             node *pre_node_ptr = nullptr;
             node *curr_node_ptr = m_root_private;
+            if (m_root_private->size() == 0)
+                return nullptr;
             while (curr_node_ptr)
             {
                 /* i 下标位置的关键字大于等于 key , range -> [0,m_key_size_private-1]
@@ -582,6 +594,9 @@ namespace azh::sdk::type
                 if (parent->size() > m_s_max_key_private)
                     splitBTNode(parent);
             }
+
+            if (parent == nullptr)
+                m_level_size_private++;
         }
 
         void eraseInNode(node *n, size_t i)
@@ -847,6 +862,7 @@ namespace azh::sdk::type
                     /* copy n to parent */
                     node::moveNode(parent, n);
                     delete n;
+                    m_level_size_private--;
                 }
             }
             /* not root node, but key size is min */

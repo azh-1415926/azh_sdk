@@ -12,6 +12,7 @@
 #include "queue.hpp"
 #include "stack.hpp"
 #include "b_tree.hpp"
+#include "map.hpp"
 
 namespace azh::sdk::type
 {

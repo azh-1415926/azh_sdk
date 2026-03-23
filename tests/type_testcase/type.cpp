@@ -129,15 +129,25 @@ TEST(azh_type, stack, "Test stack")
 TEST(azh_type, b_tree, "Test b_tree")
 {
     b_tree<int, std::string> b;
+    ASSERT_EQUAL(1, b.level());
     b.insert(45, "hello");
+    ASSERT_EQUAL(1, b.level());
     b.insert(4, "world");
+    ASSERT_EQUAL(1, b.level());
     b.insert(5, "nihao");
+    ASSERT_EQUAL(2, b.level());
     b.insert(11, "hi");
+    ASSERT_EQUAL(2, b.level());
     b.insert(47, "sorry");
+    ASSERT_EQUAL(2, b.level());
     b.insert(17, "!");
+    ASSERT_EQUAL(2, b.level());
     b.insert(67, ",");
+    ASSERT_EQUAL(2, b.level());
     b.insert(97, ".");
+    ASSERT_EQUAL(3, b.level());
     b.insert(57, "?");
+    ASSERT_EQUAL(3, b.level());
 
     ASSERT_EQUAL(9, b.size());
     ASSERT_EQUAL("hello", b.search(45));
@@ -154,13 +164,17 @@ TEST(azh_type, b_tree, "Test b_tree")
     ASSERT_EQUAL(8, b.size());
     
     b.insert(11, "hi azh");
+    ASSERT_EQUAL(3, b.level());
     b.insert(12, "hi azh");
+    ASSERT_EQUAL(3, b.level());
     b.insert(13, "hi azh");
     b.insert(14, "hi azh");
     b.insert(15, "hi azh");
     b.insert(16, "hi azh");
     b.insert(18, "hi azh");
+    ASSERT_EQUAL(3, b.level());
     b.insert(19, "hi azh");
+    ASSERT_EQUAL(4, b.level());
     b.insert(20, "hi azh");
     b.insert(21, "hi azh");
     b.insert(22, "hi azh");
@@ -175,12 +189,14 @@ TEST(azh_type, b_tree, "Test b_tree")
     ASSERT_EQUAL("?", b.search(57));
     
     b.erase(11);
+    ASSERT_EQUAL(3, b.level());
     b.erase(45);
     b.erase(4);
     b.erase(5);
     b.erase(47);
     b.erase(17);
     b.erase(97);
+    ASSERT_EQUAL(3, b.level());
     b.erase(67);
     b.erase(57);
     b.erase(16);
@@ -190,9 +206,12 @@ TEST(azh_type, b_tree, "Test b_tree")
     b.erase(22);
     b.erase(15);
     b.erase(12);
+    ASSERT_EQUAL(2, b.level());
     b.erase(19);
+    ASSERT_EQUAL(1, b.level());
     b.erase(13);
     b.erase(21);
+    ASSERT_EQUAL(1, b.level());
     
     ASSERT_EQUAL(0, b.size());
 }

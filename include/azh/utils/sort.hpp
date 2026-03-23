@@ -16,17 +16,14 @@ namespace azh::sdk::utils
         typedef _base_type *_base_type_iterator;
 
     protected:
-        // /* _type_iter is _base_type::iterator or _base_type*, default is _base_type::iterator */
-        // template <class _type_iter = typename _base_type::iterator>
-        // static void swap(_type_iter t1, _type_iter t2)
-        // {
-        //     /* use _get_compare_type_by_iter get real type by iter type */
-        //     using _type = typename _get_compare_type_by_iter<_type_iter>::type;
-
-        //     _type *tmp = new _type(*t1);
-        //     *t1 = *t2;
-        //     *t2 = *tmp;
-        // }
+        /* _type_iter is _base_type::iterator or _base_type*, default is _base_type::iterator */
+        template <class _type_iter>
+        static void swap(_type_iter t1, _type_iter t2)
+        {
+            _base_type *tmp = new _base_type(*t1);
+            *t1 = *t2;
+            *t2 = *tmp;
+        }
 
         /* _type_iter is _base_type::iterator or _base_type*, default is _base_type::iterator */
         template <class _type_iter = _base_type_iterator>
@@ -44,21 +41,6 @@ namespace azh::sdk::utils
             return -1;
         }
 
-        // /* get real type from container */
-        // template <typename _type_iter, typename = void>
-        // struct _get_compare_type_by_iter
-        // {
-        //     using type = typename _base_type::value_type;
-        // };
-
-        // /* get real type from base_type* */
-        // template <typename _type_iter>
-        // struct _get_compare_type_by_iter<_type_iter,
-        //                                  std::enable_if_t<std::is_same<_type_iter, _base_type *>::value>>
-        // {
-        //     using type = _base_type;
-        // };
-
         /* use real type to compare */
         template <typename _type>
         static int _compare(void *t1, void *t2)
@@ -74,14 +56,6 @@ namespace azh::sdk::utils
 
             return -1;
         }
-
-        // /* get real type, call func _compare<real_type>(t1,t2) */
-        // template <typename _type = _base_type>
-        // static int compare(void *t1, void *t2)
-        // {
-        //     using compare_type = typename _get_compare_type_by_iter<_type>::type;
-        //     return _compare<compare_type>(t1, t2);
-        // }
 
     private:
     };
@@ -148,34 +122,37 @@ namespace azh::sdk::utils
             // using _type =  _get_compare_type_by_iter<_type_iter>::type;
             // size_t byte_sizes = sizeof(char) * (sizeof(*begin));
 
-            // int len = end - begin;
-            // assert(len > 0);
+            int len = end - begin;
+            assert(len > 0);
 
-            // // void *tmp = new char[byte_sizes];
-            // _type *tmp = new _type;
-            // for (int i = 1; i < len; i++)
-            // {
-            //     int j;
-            //     // memcpy(tmp, &(*(begin + i)), byte_sizes);
-            //     *tmp = *(begin + i);
-            //     for (j = i; j > 0 && compare(&*(begin + j - 1), tmp) > 0; j--)
-            //     {
-            //         // swap(begin + j, begin + j - 1);
-            //         _type *__tmp = new _type(*(begin + j));
-            //         *(begin + j) = *(begin + j - 1);
-            //         *(begin + j - 1) = *__tmp;
-            //         delete __tmp;
-            //     }
+            // void *tmp = new char[byte_sizes];
+            _base_type *tmp = nullptr;
+            for (int i = 1; i < len; i++)
+            {
+                int j;
+                // memcpy(tmp, &(*(begin + i)), byte_sizes);
+                if (!tmp)
+                    tmp = new _base_type(*(begin + i));
+                *tmp = *(begin + i);
+                for (j = i; j > 0 && compare(&*(begin + j - 1), tmp) > 0; j--)
+                {
+                    // swap(begin + j, begin + j - 1);
+                    _base_type *__tmp = new _base_type(*(begin + j));
+                    *(begin + j) = *(begin + j - 1);
+                    *(begin + j - 1) = *__tmp;
+                    delete __tmp;
+                }
 
-            //     // swap(&*(begin + j), tmp,byte_sizes);
+                // swap(&*(begin + j), tmp,byte_sizes);
 
-            //     /* swap */
-            //     _type *_tmp = new _type(*(begin + j));
-            //     *(begin + j) = (_type)(*tmp);
-            //     *tmp = *_tmp;
-            //     delete _tmp;
-            // }
-            // delete tmp;
+                /* swap */
+                _base_type *_tmp = new _base_type(*(begin + j));
+                *(begin + j) = (_base_type)(*tmp);
+                *tmp = *_tmp;
+                delete _tmp;
+            }
+            if (tmp)
+                delete tmp;
         }
 
     private:
@@ -240,7 +217,7 @@ namespace azh::sdk::utils
             // _type *tmp = new _type[len];
             // for (int merge_size = 1; merge_size < len; merge_size <<= 1)
             // {
-                
+
             //     for (int left = 0; left < len;)
             //     {
             //         int mid = left + merge_size - 1;
