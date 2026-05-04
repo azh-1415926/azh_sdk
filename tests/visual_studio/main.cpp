@@ -1,8 +1,8 @@
-#include "azh/platform/win32/registry.hpp"
+#include "azh/sdk/platform/win32/registry.hpp"
 
-#include "azh/utils/command.hpp"
-#include "azh/utils/logger.hpp"
-#include "azh/utils/string.hpp"
+#include "azh/sdk/utils/command.hpp"
+#include "azh/sdk/utils/logger.hpp"
+#include "azh/sdk/utils/string.hpp"
 
 using astring=azh::sdk::utils::string;
 

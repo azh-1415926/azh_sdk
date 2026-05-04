@@ -1,6 +1,6 @@
 #include "type.h"
-#include "azh/utils/logger.hpp"
-#include "azh/test/unit_test.hpp"
+#include "azh/sdk/utils/logger.hpp"
+#include "azh/sdk/test/unit_test.hpp"
 
 using namespace azh::sdk::test;
 using namespace azh::sdk::type;

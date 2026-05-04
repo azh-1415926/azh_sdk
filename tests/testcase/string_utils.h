@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <cctype>
 
-class StringUtils
+class string_utils
 {
 public:
     // 字符串分割

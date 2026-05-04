@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.6...3.14 FATAL_ERROR)
 cmake_policy(VERSION 3.6...3.14)
 
 # load version from include/azh/version/version.hpp
-file(READ "include/azh/version/version.hpp" AZH_VERSION_FILE)
+file(READ "include/azh/sdk/version/version.hpp" AZH_VERSION_FILE)
 string(REGEX MATCH "#define[ ]+AZH_VERSION_MAJOR[ ]+([0-9]+)" _ ${AZH_VERSION_FILE})
 set(AZH_VERSION_MAJOR "${CMAKE_MATCH_1}")
 string(REGEX MATCH "#define[ ]+AZH_VERSION_MINOR[ ]+([0-9]+)" _ ${AZH_VERSION_FILE})
@@ -20,6 +20,9 @@ message(STATUS "azh_sdk : version " ${AZH_VERSION})
 
 if(MSVC)
     add_definitions(-D _CRT_SECURE_NO_WARNINGS)
+    # Specify MSVC UTF-8 encoding
+    add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
+    add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 endif()
 
 set(CMAKE_CXX_STANDARD 17)

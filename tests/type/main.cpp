@@ -1,9 +1,9 @@
-#include "azh/core/base.hpp"
-#include "azh/type/type.hpp"
+#include "azh/sdk/core/base.hpp"
+#include "azh/sdk/type/type.hpp"
 
-#include "azh/utils/command.hpp"
-#include "azh/utils/exception.hpp"
-#include "azh/utils/sort.hpp"
+#include "azh/sdk/utils/command.hpp"
+#include "azh/sdk/utils/exception.hpp"
+#include "azh/sdk/utils/sort.hpp"
 
 #include <map>
 

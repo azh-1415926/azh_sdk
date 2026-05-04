@@ -1,6 +1,6 @@
-#include "azh/type/string.hpp"
-#include "azh/utils/logger.hpp"
-#include "azh/test/unit_test.hpp"
+#include "azh/sdk/type/string.hpp"
+#include "azh/sdk/utils/logger.hpp"
+#include "azh/sdk/test/unit_test.hpp"
 
 int main() {
     aDebug()<< "Test for azh::sdk::type\n";
