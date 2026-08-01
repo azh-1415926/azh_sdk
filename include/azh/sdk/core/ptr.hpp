@@ -19,7 +19,7 @@ namespace azh::sdk::core
         DELETE_CLASS_COPY_CONSTRUCT(ptr)
         DECLARE_CLASS_DECONSTRUCT_BY_FUNC(ptr, _deinit_)
 
-        const utils::unique_time_stamp& timestamp() const { return m_time_stamp_private; }
+        // const utils::unique_time_stamp& timestamp() const { return m_time_stamp_private; }
         
         virtual std::string toString() const
         {

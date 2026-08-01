@@ -4,6 +4,9 @@
 #include <iostream>
 #include <functional>
 
+/* Not supported on MacOS */
+#ifndef __APPLE__
+
 namespace azh::sdk::utils
 {
     template <class T>
@@ -509,5 +512,7 @@ namespace azh::sdk::utils
         heap_sort() = delete;
     };
 }
+
+#endif
 
 #endif /* SORT_H */

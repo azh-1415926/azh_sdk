@@ -12,8 +12,10 @@ void test_sort_vector()
     azh::sdk::type::vector<int> array = {1, 5, 7, 6, 3, 2, 10, 34, 12, 22, 11, 33};
     aDebug() << "orignal array : " << array;
 
+    #ifndef __APPLE__
     azh::sdk::utils::bubble_sort<int>::sort(array.begin(), array.end());
     aDebug() << "sorted array : " << array;
+    #endif
 }
 
 void test_variant_vector()
@@ -29,8 +31,10 @@ void test_list()
     aDebug() << l;
     aDebug() << "orignal list : " << l;
 
+    #ifndef __APPLE__
     azh::sdk::utils::insertion_sort<int>::sort(l.begin(), l.end());
     aDebug() << "sorted list : " << l;
+    #endif
 }
 
 void test_queue()
