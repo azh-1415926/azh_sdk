@@ -18,6 +18,7 @@ set(AZH_VERSION ${AZH_VERSION_MAJOR}.${AZH_VERSION_MINOR}.${AZH_VERSION_PATCH})
 project(azh_sdk VERSION ${AZH_VERSION} LANGUAGES CXX)
 message(STATUS "azh_sdk : version " ${AZH_VERSION})
 
+# for msvc
 if(MSVC)
     add_definitions(-D _CRT_SECURE_NO_WARNINGS)
     # Specify MSVC UTF-8 encoding
@@ -26,24 +27,26 @@ if(MSVC)
 endif()
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/install)
 
+# collect sources
 file(GLOB_RECURSE incs ${CMAKE_SOURCE_DIR}/include/*.h*)
 file(GLOB_RECURSE srcs ${CMAKE_SOURCE_DIR}/src/*.c*)
 
-include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
-
+# library azh_sdk
 add_library(azh_sdk ${incs} ${srcs})
-
 target_include_directories(azh_sdk PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>)
 
+add_subdirectory(tests)
+
+# installation configuration for azh_sdk
 install(
 	DIRECTORY include
 	DESTINATION "."
     # PATTERN "CMakeLists.txt" EXCLUDE    
 )
-
 install(TARGETS azh_sdk
     EXPORT azh_sdk-targets
     PUBLIC_HEADER DESTINATION include
@@ -64,4 +67,8 @@ configure_package_config_file(
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/azh_sdk-Config.cmake DESTINATION lib/cmake/azh_sdk)
 
-add_subdirectory(tests)
+# install azh_sdk
+add_custom_command(TARGET azh_sdk POST_BUILD
+    COMMAND ${CMAKE_COMMAND} --install . --config $<CONFIG>
+    COMMENT "Installing after build"
+)

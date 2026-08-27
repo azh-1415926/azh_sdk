@@ -220,8 +220,15 @@ namespace azh::sdk::utils
         _logger *getLoggerSingleInstance(const std::string &log_name)
         {
             std::string log_filepath = log_name + "-" + get_current_time() + ".log";
+            static std::string pre_log_filepath = "";
             static _logger logger(log_filepath);
-            logger.open(log_filepath);
+            
+            if(pre_log_filepath != log_filepath)
+            {
+                logger.open(log_filepath);
+                pre_log_filepath = log_filepath;
+            }
+            
             return &logger;
         }
     };
@@ -251,6 +258,26 @@ namespace azh::sdk::utils
         }
         ~logger_wrapper()
         {
+            fflush();
+        }
+
+        logger_wrapper(const logger_wrapper &l) = delete;
+        logger_wrapper &operator=(const logger_wrapper &l) = delete;
+
+        template <class _type>
+        logger_wrapper &operator<<(const _type &t)
+        {
+            m_contents_private.push_back(azh::sdk::type::to_string(t));
+            return *this;
+        }
+
+        void fflush()
+        {
+            if(m_contents_private.empty())
+            {
+                return;
+            }
+            
             switch (m_print_type_private)
             {
             case 0:
@@ -276,16 +303,8 @@ namespace azh::sdk::utils
             default:
                 break;
             }
-        }
 
-        logger_wrapper(const logger_wrapper &l) = delete;
-        logger_wrapper &operator=(const logger_wrapper &l) = delete;
-
-        template <class _type>
-        logger_wrapper &operator<<(const _type &t)
-        {
-            m_contents_private.push_back(azh::sdk::type::to_string(t));
-            return *this;
+            m_contents_private.clear();
         }
     };
 }

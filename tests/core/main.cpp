@@ -1,44 +1,51 @@
-#include <azh/sdk/type/type.hpp>
+#include <azh/sdk/core/finite_state_machine.hpp>
+#include <azh/sdk/type/string.hpp>
 #include <azh/sdk/utils/logger.hpp>
-#include <azh/sdk/utils/unique_time_stamp.hpp>
-#include <azh/sdk/utils/file_reader.hpp>
-#include <azh/sdk/core/ptr.hpp>
-#include <mutex>
-#include <thread>
 
-int main(int argc,char** argv)
+
+using namespace azh::sdk::core;
+
+// Define state and event enums (lowercase with underscores as needed)
+enum class door_state { closed, open };
+
+enum class door_event { open_event, close_event };
+
+void test_fsm()
 {
-    azh::sdk::type::vector<std::string> v={"1","2","3"};
-    azh::sdk::utils::logger::getInstance()->fatal("Main Thread Start!");
+    // Create finite state machine with initial state "closed"
+    finite_state_machine<door_state, door_event> m_fsm(door_state::closed);
 
-    aDebug()<<"----------------";
+    // Add transition: closed + open_event -> open
+    m_fsm.addTransition(door_state::closed, door_event::open_event, door_state::open, []() {
+        aDebug() << "Door is opening...";
+    });
 
-    azh::sdk::type::b_tree<azh::sdk::utils::unique_time_stamp,std::string,5> b_tree;
+    // Add transition: open + close_event -> closed
+    m_fsm.addTransition(door_state::open, door_event::close_event, door_state::closed, []() {
+        aDebug() << "Door is closing...";
+    });
 
-    b_tree.insert(azh::sdk::utils::unique_time_stamp(),"1");
-    b_tree.insert(azh::sdk::utils::unique_time_stamp(),"2");
-    b_tree.insert(azh::sdk::utils::unique_time_stamp(),"3");
-    b_tree.insert(azh::sdk::utils::unique_time_stamp(),"4");
-    b_tree.insert(azh::sdk::utils::unique_time_stamp(),"5");
-    b_tree.insert(azh::sdk::utils::unique_time_stamp(),"6");
-    b_tree.insert(azh::sdk::utils::unique_time_stamp(),"7");
-    b_tree.insert(azh::sdk::utils::unique_time_stamp(),"8");
-    b_tree.insert(azh::sdk::utils::unique_time_stamp(),"9");
-    b_tree.insert(azh::sdk::utils::unique_time_stamp(),"10");
-    b_tree.insert(azh::sdk::utils::unique_time_stamp(),"11");
-    aDebug()<<b_tree;
+    // Output initial state
+    if (m_fsm.getCurrentState() == door_state::closed) {
+        aDebug() << "Initial state: closed";
+    }
 
-    azh::sdk::utils::logger::getInstance()->fatal("Main Thread End!");
+    // Trigger open event
+    m_fsm.triggerEvent(door_event::open_event);
+    if (m_fsm.getCurrentState() == door_state::open) {
+        aDebug() << "Current state: open";
+    }
 
-    int* test=new int;;
-    *test=1;
-    azh::sdk::core::ptr<int> p;
-    azh::sdk::core::ptr<int> p1;
-    p.reset(test);
-    p1.reset(test);
-    aDebug()<<*p;
-    *test=2;
-    aDebug()<<*p1;
+    // Trigger close event
+    m_fsm.triggerEvent(door_event::close_event);
+    if (m_fsm.getCurrentState() == door_state::closed) {
+        aDebug() << "Current state: closed";
+    }
+}
 
+int main()
+{
+    test_fsm();
+    
     return 0;
 }
