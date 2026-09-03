@@ -41,7 +41,7 @@ target_include_directories(azh_sdk PUBLIC
 
 if(AZH_ENABLE_TESTS)
     add_subdirectory(tests)
-endif
+endif()
 
 # installation configuration for azh_sdk
 install(
