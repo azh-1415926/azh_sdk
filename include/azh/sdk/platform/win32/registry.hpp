@@ -36,40 +36,40 @@ namespace azh::sdk::platform::win32
 			case type::HKey_Local_Machine:
 				if (ERROR_SUCCESS != RegOpenKeyEx(HKEY_LOCAL_MACHINE,registry_path.c_str(),0,KEY_READ,&hkey_ret))
 				{
-					return false;
+					return "";
 				}
 				break;
 
 			case type::HKey_Classes_Root:
 				if (ERROR_SUCCESS != RegOpenKeyEx(HKEY_CLASSES_ROOT,registry_path.c_str(),0,KEY_READ,&hkey_ret))
 				{
-					return false;
+					return "";
 				}
 				break;
 
 			case type::HKey_Current_User:
 				if (ERROR_SUCCESS != RegOpenKeyEx(HKEY_CURRENT_USER,registry_path.c_str(),0,KEY_READ,&hkey_ret))
 				{
-					return false;
+					return "";
 				}
 				break;
 
 			case type::HKey_Users:
 				if (ERROR_SUCCESS != RegOpenKeyEx(HKEY_USERS,registry_path.c_str(),0,KEY_READ,&hkey_ret))
 				{
-					return false;
+					return "";
 				}
 				break;
 
 			case type::HKey_Current_Config:
 				if (ERROR_SUCCESS != RegOpenKeyEx(HKEY_CURRENT_CONFIG,registry_path.c_str(),0,KEY_READ,&hkey_ret))
 				{
-					return false;
+					return "";
 				}
 				break;
 			
 			default:
-				return false;
+				return "";
 				break;
 			}
 
@@ -85,7 +85,7 @@ namespace azh::sdk::platform::win32
 									 &size
 									 ))
 			{
-				return false;
+				return "";
 			}
 
 			return value;
