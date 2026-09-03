@@ -30,8 +30,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/install)
 
 # collect sources
-file(GLOB_RECURSE incs ${CMAKE_SOURCE_DIR}/include/*.h*)
-file(GLOB_RECURSE srcs ${CMAKE_SOURCE_DIR}/src/*.c*)
+file(GLOB_RECURSE incs ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h*)
+file(GLOB_RECURSE srcs ${CMAKE_CURRENT_SOURCE_DIR}/src/*.c*)
 
 # library azh_sdk
 add_library(azh_sdk ${incs} ${srcs})
