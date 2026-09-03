@@ -39,7 +39,9 @@ target_include_directories(azh_sdk PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>)
 
-add_subdirectory(tests)
+if(AZH_ENABLE_TESTS)
+    add_subdirectory(tests)
+endif
 
 # installation configuration for azh_sdk
 install(
